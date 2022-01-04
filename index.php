@@ -9,7 +9,7 @@
 </head>
 <body>
     <div>
-        <canvas id="painting" width="250" height="250" style="background-color: yellow;"></canvas>
+        <canvas id="painting" width="500" height="300" style="border: 1px solid #111111;"></canvas>
         <button type="button" onclick="base64()">Enviar</button>
     </div>
     <script>
@@ -19,7 +19,6 @@
         painting.setAttribute("width", largura);
         painting.setAttribute("height", altura);        
         const context = painting.getContext("2d");
-        context.fillStyle = "yellow";
         let drawing = false;
         painting.onmousedown = function (evt) {
             context.moveTo(evt.clientX, evt.clientY);
