@@ -2,7 +2,6 @@
 var TypeQuality;
 (function (TypeQuality) {
     TypeQuality["jpg"] = "image/jpg";
-    TypeQuality["jpeg"] = "image/jpeg";
     TypeQuality["png"] = "image/png";
 })(TypeQuality || (TypeQuality = {}));
 var CanvasDefault = (function () {
@@ -17,22 +16,23 @@ var CanvasDefault = (function () {
         }
         this.element = document.getElementById(id);
         this.context = this.element.getContext("2d");
-        this.addEvents();
+        this.events();
     }
     CanvasDefault.prototype.getBase64 = function (type, quality) {
         if (type === void 0) { type = TypeQuality.jpg; }
         if (quality === void 0) { quality = 1; }
-        return this.getBase64OrHash(type, quality, false);
+        return this.element.toDataURL(type, quality);
     };
-    CanvasDefault.prototype.getHash = function (type, quality) {
+    CanvasDefault.prototype.getBase64Hash = function (type, quality) {
         if (type === void 0) { type = TypeQuality.jpg; }
         if (quality === void 0) { quality = 1; }
-        return this.getBase64OrHash(type, quality, true);
+        var data = this.getBase64(type, quality);
+        return data.substring(data.indexOf(",") + 1, data.length);
     };
     CanvasDefault.create = function (id) {
         return new CanvasDefault(id);
     };
-    CanvasDefault.prototype.addEvents = function () {
+    CanvasDefault.prototype.events = function () {
         var _this = this;
         this.element.onmousedown = function (e) {
             var _a;
@@ -49,16 +49,6 @@ var CanvasDefault = (function () {
                 (_b = _this.context) === null || _b === void 0 ? void 0 : _b.stroke();
             }
         };
-    };
-    CanvasDefault.prototype.getBase64OrHash = function (type, quality, onlyHash) {
-        if (type === void 0) { type = TypeQuality.jpg; }
-        if (quality === void 0) { quality = 1; }
-        if (onlyHash === void 0) { onlyHash = false; }
-        var data = this.element.toDataURL(type, quality);
-        if (onlyHash) {
-            return data.substr(data.indexOf(",") + 1, data.length);
-        }
-        return data;
     };
     return CanvasDefault;
 }());

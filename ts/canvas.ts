@@ -1,6 +1,5 @@
 enum TypeQuality {
   jpg = "image/jpg",
-  jpeg = "image/jpeg",
   png = "image/png",
 }
 
@@ -8,7 +7,7 @@ interface ICanvasDefault {
   element: HTMLCanvasElement;
   context: CanvasRenderingContext2D | undefined | null;
   getBase64(type: TypeQuality, quality: number): string;
-  getHash(type: TypeQuality, quality: number): string;
+  getBase64Hash(type: TypeQuality, quality: number): string;
 }
 
 class CanvasDefault implements ICanvasDefault {
@@ -25,22 +24,23 @@ class CanvasDefault implements ICanvasDefault {
     }
     this.element = document.getElementById(id) as HTMLCanvasElement;
     this.context = this.element.getContext("2d");
-    this.addEvents();
+    this.events();
   }
 
   public getBase64(type: TypeQuality = TypeQuality.jpg, quality: number = 1): string {
-    return this.getBase64OrHash(type, quality, false);
+    return this.element.toDataURL(type, quality);
   }
 
-  public getHash(type: TypeQuality = TypeQuality.jpg, quality: number = 1): string {
-    return this.getBase64OrHash(type, quality, true);
+  public getBase64Hash(type: TypeQuality = TypeQuality.jpg, quality: number = 1): string {
+    const data = this.getBase64(type, quality);
+    return data.substring(data.indexOf(",") + 1, data.length);
   }
 
   public static create(id: string): CanvasDefault {
     return new CanvasDefault(id);
   }
 
-  protected addEvents(): void {
+  protected events(): void {
     this.element.onmousedown = (e: MouseEvent) => {
       this.context?.moveTo(e.clientX, e.clientY);
       this.drawing = true;
@@ -54,13 +54,5 @@ class CanvasDefault implements ICanvasDefault {
         this.context?.stroke();
       }
     };
-  }
-
-  protected getBase64OrHash(type: TypeQuality = TypeQuality.jpg, quality: number = 1, onlyHash: boolean = false) {
-    const data = this.element.toDataURL(type, quality);
-    if (onlyHash) {
-      return data.substr(data.indexOf(",") + 1, data.length);
-    }
-    return data;
   }
 }
