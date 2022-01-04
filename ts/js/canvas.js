@@ -5,8 +5,7 @@ var TypeQuality;
     TypeQuality["png"] = "image/png";
 })(TypeQuality || (TypeQuality = {}));
 var CanvasDefault = (function () {
-    function CanvasDefault(id) {
-        this.id = id;
+    function CanvasDefault(id, options) {
         this.drawing = false;
         if (!document.getElementById(id)) {
             throw new Error("Element not found ...");
@@ -14,9 +13,12 @@ var CanvasDefault = (function () {
         if (!(document.getElementById(id) instanceof HTMLCanvasElement)) {
             throw new Error("The element of id \"".concat(id, "\" is not a HTMLCanvasElement. Make sure a <canvas id=\"").concat(id, "\"\"> element is present in the document."));
         }
+        this.id = id;
         this.element = document.getElementById(id);
         this.context = this.element.getContext("2d");
-        this.events();
+        this.options = this.getOptionsDefault(options);
+        this.setElementOption(this.options);
+        this.setEvents();
     }
     CanvasDefault.prototype.getBase64 = function (type, quality) {
         if (type === void 0) { type = TypeQuality.jpg; }
@@ -26,13 +28,20 @@ var CanvasDefault = (function () {
     CanvasDefault.prototype.getBase64Hash = function (type, quality) {
         if (type === void 0) { type = TypeQuality.jpg; }
         if (quality === void 0) { quality = 1; }
-        var data = this.getBase64(type, quality);
+        var data = this.element.toDataURL(type, quality);
         return data.substring(data.indexOf(",") + 1, data.length);
     };
-    CanvasDefault.create = function (id) {
-        return new CanvasDefault(id);
+    CanvasDefault.create = function (id, options) {
+        return new CanvasDefault(id, options);
     };
-    CanvasDefault.prototype.events = function () {
+    CanvasDefault.prototype.getOptionsDefault = function (options) {
+        return options !== null && options !== void 0 ? options : { width: 100, heigth: 100 };
+    };
+    CanvasDefault.prototype.setElementOption = function (options) {
+        this.element.setAttribute("width", options.width.toString());
+        this.element.setAttribute("height", options.heigth.toString());
+    };
+    CanvasDefault.prototype.setEvents = function () {
         var _this = this;
         this.element.onmousedown = function (e) {
             var _a;
